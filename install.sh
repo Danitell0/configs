@@ -120,6 +120,33 @@ do_tools() {
 		tool bat   sharkdp/bat           'x86_64-unknown-linux-musl\.tar\.gz$'
 	tool btop      aristocratos/btop     'btop-x86_64-unknown-linux-musl\.tar\.gz$'
 
+	# Ghostty: the Universal AppImage from Ghostty's install docs (no sudo)
+	if ! command -v ghostty >/dev/null; then
+		say "installing ghostty (AppImage)"
+		local url opt="$HOME/.local/opt/ghostty"
+		url=$(curl -fsSL https://api.github.com/repos/pkgforge-dev/ghostty-appimage/releases/latest |
+			grep -o '"browser_download_url": *"[^"]*x86_64\.AppImage"' | sed 's/.*"\(http[^"]*\)"$/\1/' | head -1)
+		mkdir -p "$opt"
+		if [ -n "$url" ] && curl -fsSL -o "$opt/Ghostty.AppImage" "$url"; then
+			chmod +x "$opt/Ghostty.AppImage"
+			ln -sfn "$opt/Ghostty.AppImage" "$BIN/ghostty"
+			mkdir -p "$HOME/.local/share/applications"
+			cat > "$HOME/.local/share/applications/ghostty-appimage.desktop" <<-EOF
+				[Desktop Entry]
+				Name=Ghostty
+				Comment=Terminal (AppImage, from configs repo)
+				Exec=$opt/Ghostty.AppImage
+				Icon=utilities-terminal
+				Terminal=false
+				Type=Application
+				Categories=System;TerminalEmulator;
+			EOF
+			say "ghostty added to your app menu"
+		else
+			warn "could not download ghostty"
+		fi
+	fi
+
 	# no official prebuilt binaries for these two
 	for t in tmux cava; do
 		command -v "$t" >/dev/null && continue

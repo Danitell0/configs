@@ -12,8 +12,9 @@ git clone git@github.com:Danitell0/configs.git ~/Coding/configs
 
 - Links every config into `~/.config` (edits there edit this repo).
   Whatever was there before is kept as `<name>.bak-<date>`.
-- Downloads missing tools into `~/.local/bin`: nvim, yazi, fzf, fastfetch,
-  zoxide, eza, bat, btop. tmux and cava have no official prebuilt
+- Downloads missing tools into `~/.local/bin`: Ghostty (the Universal
+  AppImage from Ghostty's install docs, also added to the app menu), nvim,
+  yazi, fzf, fastfetch, zoxide, eza, bat, btop. tmux and cava have no official prebuilt
   binaries, so they need apt, brew, or IT.
 - Adds one line to `~/.bashrc` that sources `bash/dotfiles.sh`.
 
