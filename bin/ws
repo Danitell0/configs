@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# ws - open (or reattach to) the tmux workspace set.
+#   1 code  : yazi tree / claude | nvim / terminal
+#   2 files : yazi
+#   3 sys   : btop | fastfetch + shell / cava (music visualizer)
+#   4 dev   : nvim | shell
+# Edit the "build" section to change what each workspace shows.
+#
+#   ws               open the set (what Ghostty runs); asks for a project first
+#   ws code [dir]    add another code workspace (no dir: pick one)
+
+export PATH="$HOME/.local/bin:$PATH"
+SESSION=main
+DEV_DIR="$HOME"
+RUNDIR="${XDG_RUNTIME_DIR:-/tmp}"
+
+# code workspace:
+# ┌────────┬──────────────────┐
+# │ yazi   │ nvim             │
+# ├────────┤                  │
+# │ claude ├──────────────────┤
+# │        │ terminal         │
+# └────────┴──────────────────┘
+# Files opened in the tree land in this window's nvim (via its socket).
+add_code() {
+	local dir="${1:-$DEV_DIR}" win nvim_pane tree_pane claude_pane name
+	local sock="$RUNDIR/nvim-ws-$(date +%s%N).sock"
+	dir="$(cd "$dir" 2>/dev/null && pwd || echo "$DEV_DIR")"
+	name=$(basename "$dir"); [ "$dir" = "$HOME" ] && name=code
+	if tmux has-session -t "$SESSION" 2>/dev/null; then
+		win=$(tmux new-window -d -P -F '#{window_id}' -t "$SESSION" -n "$name" -c "$dir" -e NVIM_SOCK="$sock")
+	else
+		win=$(tmux new-session -d -P -F '#{window_id}' -s "$SESSION" -n "$name" -c "$dir" -e NVIM_SOCK="$sock")
+		# keep the socket in this window only, not in later workspaces
+		tmux set-environment -u -t "$SESSION" NVIM_SOCK
+	fi
+	nvim_pane=$(tmux display -p -t "$win" '#{pane_id}')
+	tmux split-window -d -v -l 25% -t "$nvim_pane" -c "$dir" -e NVIM_SOCK="$sock"
+	tree_pane=$(tmux split-window -d -P -F '#{pane_id}' -h -b -f -l 22% -t "$nvim_pane" -c "$dir" \
+		-e NVIM_SOCK="$sock" -e NVIM_PANE="$nvim_pane" -e EDITOR=nvim-open \
+		-e YAZI_CONFIG_HOME="$HOME/.config/yazi-sidebar")
+	claude_pane=$(tmux split-window -d -P -F '#{pane_id}' -v -l 60% -t "$tree_pane" -c "$dir" \
+		-e NVIM_SOCK="$sock" -e NVIM_PANE="$nvim_pane")
+	tmux send-keys -t "$tree_pane" 'y' Enter
+	command -v claude >/dev/null && tmux send-keys -t "$claude_pane" 'claude' Enter
+	tmux send-keys -t "$nvim_pane" 'nvim' Enter
+	tmux select-pane -t "$nvim_pane"
+	echo "$win"
+}
+
+if [ "$1" = code ]; then
+	dir="$2"
+	[ -z "$dir" ] && { dir=$(pick-project) || exit 0; }
+	win=$(add_code "$dir")
+	tmux select-window -t "$win"
+	exit 0
+fi
+
+# No tmux yet -> just give a normal shell so Ghostty still works.
+command -v tmux >/dev/null || exec bash -l
+
+if tmux has-session -t "$SESSION" 2>/dev/null; then
+	# Already attached in another window: open a linked view of the same
+	# workspaces that can sit on a different one, and dies when closed.
+	if [ -n "$(tmux list-clients -t "$SESSION" 2>/dev/null)" ]; then
+		exec tmux new-session -t "$SESSION" \; set-option destroy-unattached on
+	fi
+	exec tmux attach -t "$SESSION"
+fi
+
+monitor=btop
+command -v btop >/dev/null || monitor=htop
+
+# --- build ---
+# 1 code (pick the project first; Esc = $DEV_DIR)
+dir="$DEV_DIR"
+command -v fzf >/dev/null && [ -t 0 ] && { dir=$(pick-project) || dir="$DEV_DIR"; }
+add_code "$dir" >/dev/null
+
+# 2 files
+tmux new-window -t "$SESSION" -n files -c "$HOME"
+tmux send-keys -t "$SESSION:files" 'y' Enter
+
+# 3 sys
+tmux new-window -t "$SESSION" -n sys -c "$HOME"
+tmux send-keys -t "$SESSION:sys" "$monitor" Enter
+tmux split-window -h -l 53% -t "$SESSION:sys" -c "$HOME"
+if command -v cava >/dev/null; then
+	tmux split-window -d -v -l 30% -t "$SESSION:sys.2" -c "$HOME"
+	tmux send-keys -t "$SESSION:sys.3" 'cava' Enter
+fi
+tmux send-keys -t "$SESSION:sys.2" 'clear; fastfetch' Enter
+tmux select-pane -t "$SESSION:sys.1"
+
+# 4 dev
+tmux new-window -t "$SESSION" -n dev -c "$HOME"
+tmux send-keys -t "$SESSION:dev" 'nvim' Enter
+tmux split-window -h -l 30% -t "$SESSION:dev" -c "$HOME"
+tmux select-pane -t "$SESSION:dev.1"
+
+tmux select-window -t "$SESSION:1"
+exec tmux attach -t "$SESSION"

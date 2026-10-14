@@ -1,0 +1,24 @@
+## cava - audio visualizer in the sys workspace (bottom right)
+[general]
+framerate = 60
+autosens = 1
+bars = 0
+bar_width = 2
+bar_spacing = 1
+
+[input]
+method = pulse
+source = auto
+
+[output]
+method = ncurses
+
+[color]
+; cava 0.7 can't do gradients inside tmux; named colors use the
+; terminal palette, so cyan = Solarized #2aa198
+foreground = cyan
+background = default
+
+[smoothing]
+noise_reduction = 77
+monstercat = 0

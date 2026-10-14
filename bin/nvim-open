@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# nvim-open - open files in the nvim of this code workspace, then focus it.
+# Used as $EDITOR by the yazi sidebar. Falls back to a plain nvim.
+if [ -n "$NVIM_SOCK" ] && [ -S "$NVIM_SOCK" ] &&
+	nvim --server "$NVIM_SOCK" --remote "$@" 2>/dev/null; then
+	[ -n "$NVIM_PANE" ] && tmux select-pane -t "$NVIM_PANE"
+	exit 0
+fi
+exec nvim "$@"

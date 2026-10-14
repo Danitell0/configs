@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# pick-project - fuzzy-pick a project folder, print its path.
+# List order: current folder, recent (zoxide), git repos, ~/Coding & ~/Robotics.
+# Esc prints nothing and exits 1. Typing a path that exists also works.
+
+export PATH="$HOME/.local/bin:$PATH"
+
+candidates() {
+	local repos
+	repos=$(find "$HOME" -maxdepth 5 \( -name .cache -o -name .local -o -name node_modules \
+		-o -name .venv -o -name snap -o -name .cargo -o -name .rustup -o -name .npm \) -prune \
+		-o -name .git -print -prune 2>/dev/null | sed 's|/\.git$||')
+	echo "$PWD"
+	command -v zoxide >/dev/null && zoxide query -l 2>/dev/null | head -30
+	echo "$repos"
+	# plain folders, minus ones that sit inside a repo
+	find "$HOME/Coding" "$HOME/Robotics" -mindepth 1 -maxdepth 2 -type d -not -name '.*' 2>/dev/null |
+		awk -v r="$repos" 'BEGIN { n = split(r, R, "\n") }
+			{ for (i = 1; i <= n; i++) if (index($0, R[i] "/") == 1) next; print }'
+	echo "$HOME"
+}
+
+preview='p={}; p="${p/#\~/$HOME}"; eza --tree --level=2 --icons --color=always "$p" 2>/dev/null || ls "$p"'
+
+out=$(candidates | awk '!seen[$0]++' | sed "s|^$HOME|~|" |
+	fzf --print-query --reverse --height=100% --border=rounded \
+		--prompt='project > ' --header='Enter: open here   Esc: cancel' \
+		--preview="$preview" --preview-window=right,50%)
+# fzf: 0 picked, 1 no match (use typed path), 130 Esc
+case $? in 0|1) ;; *) exit 1 ;; esac
+query=$(sed -n 1p <<<"$out")
+pick=$(sed -n 2p <<<"$out")
+[ -z "$pick" ] && pick="$query"          # typed a path that wasn't listed
+pick="${pick/#\~/$HOME}"
+[ -n "$pick" ] && [ -d "$pick" ] || exit 1
+command -v zoxide >/dev/null && zoxide add "$pick"
+echo "$pick"

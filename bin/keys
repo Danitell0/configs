@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# keys - searchable cheat sheet (data: ~/.config/tmux/keys.txt)
+# Type to filter, Esc/Enter to close.
+export PATH="$HOME/.local/bin:$PATH"
+f="$HOME/.config/tmux/keys.txt"
+grep -v '^\s*#' "$f" | grep -v '^\s*$' |
+	awk -F' *\\| *' '{ printf "\033[36m%-13s\033[0m \033[33m%-36s\033[0m %s\n", $1, $2, $3 }' |
+	fzf --ansi --no-sort --reverse --border=rounded --exact \
+		--prompt='search > ' --header='keys & tools  (leader = Ctrl+Space)   Esc to close' \
+		--color='header:blue,prompt:cyan,pointer:yellow' >/dev/null
+exit 0

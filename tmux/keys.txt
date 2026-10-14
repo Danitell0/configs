@@ -1,0 +1,88 @@
+# Cheat sheet shown by `Ctrl+Space ?` (or `keys` in a shell).
+# Format: SECTION | KEYS | WHAT IT DOES   (lines starting with # are skipped)
+# "leader" = Ctrl+Space (Ctrl+b also works)
+
+workspace | Alt+1..9 | jump to workspace 1..9
+workspace | leader Tab / leader Shift+Tab | next / previous workspace
+workspace | leader C | pick a project -> new code workspace (tree, claude, nvim, terminal)
+workspace | leader c | new empty workspace in current folder
+workspace | leader w | close workspace (asks first)
+workspace | leader r | rename workspace
+workspace | leader W | list all workspaces + panes (preview, Enter to jump)
+workspace | leader f s | pick a session
+
+pane | Alt+h/j/k/l | move to pane left/down/up/right (no leader)
+pane | leader h/j/k/l | move to pane (same as nvim <leader>hjkl)
+pane | leader v | split side by side (like nvim <leader>v)
+pane | leader s | split top / bottom
+pane | leader t | small terminal at the bottom (like nvim <leader>t)
+pane | leader x | close pane (like nvim <leader>x)
+pane | leader z | zoom pane full screen / back
+pane | leader X | frozen pane: force-restart its program in place
+pane | leader Ctrl+l | redraw the screen (glitched display)
+pane | leader H/J/K/L | resize pane (repeatable)
+pane | leader Ctrl+arrows | resize pane (like nvim C-arrows)
+
+popup | leader f d | file browser popup (yazi) in current folder
+popup | leader f t | floating terminal (like nvim <leader>ft)
+popup | leader ? | this cheat sheet
+
+scroll | leader Esc | scroll / copy mode (vim keys, mouse wheel also works)
+scroll | v / Ctrl+v | start selection / block selection
+scroll | y | copy selection to clipboard and exit
+scroll | / or ? | search down / up, then n / N
+scroll | q or Ctrl+j | leave scroll mode
+
+code ws | (layout) | yazi tree + claude on the left, nvim + terminal on the right
+code ws | Enter or l on a file (tree) | open it in this workspace's nvim
+code ws | nvim-open FILE | from a shell: open FILE in the workspace's nvim
+code ws | ws code [DIR] | from a shell: new code workspace (no DIR = picker)
+
+files (yazi) | j/k  h/l | down/up, parent / enter folder
+files (yazi) | Enter | open file (nvim)
+files (yazi) | Space | select file (then y/x/d act on all selected)
+files (yazi) | y / x / p | copy / cut / paste
+files (yazi) | a | create file (end with / for a folder)
+files (yazi) | r | rename
+files (yazi) | d / D | trash / delete permanently
+files (yazi) | . | show / hide hidden files
+files (yazi) | / | find in current folder (n / N next / prev)
+files (yazi) | S | search file contents (ripgrep)
+files (yazi) | z / Z | fuzzy jump to file (fzf) / to frequent folder (zoxide)
+files (yazi) | gh / gc / gg / G | go home / ~/.config / top / bottom
+files (yazi) | Tab | quick look at file info
+files (yazi) | q | quit (with `y`, the shell cd's to where you ended)
+files (yazi) | F1 or ~ | full yazi help
+
+shell | y | open yazi, cd to where you quit
+shell | z NAME / zi | jump to frequent folder / pick interactively
+shell | ll / lt | detailed list / tree (eza)
+shell | bat FILE | show file with colors (cat is plain bat too)
+shell | keys | this cheat sheet
+shell | ws | open / reattach the workspace set
+
+nvim | Space | leader
+nvim | <leader>ff / fg / fo / fb | find files / grep text / recent files / buffers
+nvim | <leader>fd | file browser (Telescope)
+nvim | <leader>a / <leader>fl | harpoon: mark file / list marks
+nvim | Ctrl+e / Ctrl+n / Ctrl+p | harpoon menu / next / previous mark
+nvim | <leader>h/j/k/l | move between nvim windows
+nvim | <leader>v / <leader>x | vertical split / close window
+nvim | Tab / Shift+Tab / <leader>Tab | next / previous / new tab
+nvim | <leader>w | close buffer
+nvim | <leader>t / <leader>ft | terminal bottom / floating
+nvim | <leader>cs | pick colorscheme
+nvim | <leader>dd | diagnostics list
+nvim | <leader>fy | clipboard history (neoclip)
+nvim | Ctrl+j | escape (insert and terminal mode)
+
+ghostty | Ctrl+Shift+c / Ctrl+Shift+v | copy / paste
+ghostty | Ctrl+= / Ctrl+- / Ctrl+0 | font bigger / smaller / reset
+ghostty | Ctrl+Shift+r | reload Ghostty config
+ghostty | leader R | reload tmux config
+
+btop | arrows or h/j/k/l | move / select process
+btop | f / K / q | filter / kill process / quit
+
+cava | Up / Down | more / less bar height (sensitivity)
+cava | q | quit (type `cava` to start again)

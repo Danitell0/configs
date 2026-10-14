@@ -1,0 +1,6 @@
+# yazi as a file tree next to nvim (used by the "code" workspace)
+[mgr]
+ratio = [0, 1, 0]        # only the current folder, no parent/preview columns
+sort_dir_first = true
+show_hidden = false
+linemode = "none"

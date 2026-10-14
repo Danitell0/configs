@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# pane-restart PANE - kill whatever is frozen in a tmux pane and run it again.
+# Keeps the pane's shell (and its env: sidebar settings, nvim socket...),
+# so the pane stays exactly where it is in the layout.
+pane="$1"
+read -r tty shell_pid cmd < <(tmux display -p -t "$pane" '#{pane_tty} #{pane_pid} #{pane_current_command}')
+pids=$(ps -t "${tty#/dev/}" -o pid= | awk -v s="$shell_pid" '$1 != s')
+if [ -z "$pids" ]; then
+	tmux display "nothing running in this pane"
+	exit 0
+fi
+kill -KILL $pids 2>/dev/null
+sleep 0.3
+case "$cmd" in
+	yazi) cmd=y ;;            # y = yazi that cd's the shell on quit
+	bash|sh|"") cmd= ;;
+esac
+tmux send-keys -t "$pane" C-c 'clear' Enter
+[ -n "$cmd" ] && tmux send-keys -t "$pane" "$cmd" Enter
+tmux display "restarted: ${cmd:-shell}"

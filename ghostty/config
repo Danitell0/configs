@@ -1,0 +1,56 @@
+theme = iTerm2 Solarized Dark
+
+# Font
+font-size = 13
+
+# Window
+window-width = 300
+window-height = 100
+window-padding-x = 10
+window-padding-y = 10
+window-padding-balance = true
+
+# Cursor
+cursor-style = block
+cursor-style-blink = false
+
+# Behaviour
+copy-on-select = clipboard
+mouse-hide-while-typing = true
+confirm-close-surface = false
+
+# Transparency
+background-opacity = 0.95
+
+# Workspaces
+# Every Ghostty window opens straight into the tmux workspace set
+# (code, files, sys, dev). Layout lives in bin/ws.
+command = shell:~/.local/bin/ws
+
+# Keybinds
+# tmux owns splits/workspaces (prefix = Ctrl+Space, like <leader>).
+# Free Alt+1..9 so they reach tmux and jump workspaces, i3/Hyprland style.
+keybind = alt+1=unbind
+keybind = alt+digit_1=unbind
+keybind = alt+2=unbind
+keybind = alt+digit_2=unbind
+keybind = alt+3=unbind
+keybind = alt+digit_3=unbind
+keybind = alt+4=unbind
+keybind = alt+digit_4=unbind
+keybind = alt+5=unbind
+keybind = alt+digit_5=unbind
+keybind = alt+6=unbind
+keybind = alt+digit_6=unbind
+keybind = alt+7=unbind
+keybind = alt+digit_7=unbind
+keybind = alt+8=unbind
+keybind = alt+digit_8=unbind
+keybind = alt+9=unbind
+keybind = alt+digit_9=unbind
+
+# Ghostty-level extras
+keybind = ctrl+shift+r=reload_config
+keybind = ctrl+equal=increase_font_size:1
+keybind = ctrl+minus=decrease_font_size:1
+keybind = ctrl+zero=reset_font_size
