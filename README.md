@@ -6,8 +6,8 @@ Solarized Dark everywhere, keys that mirror my nvim config.
 ## Install (no sudo needed)
 
 ```bash
-git clone <this repo> ~/configs
-cd ~/configs && ./install.sh
+git clone git@github.com:Danitell0/configs.git ~/Coding/configs
+~/Coding/configs/install.sh
 ```
 
 - Links every config into `~/.config` (edits there edit this repo).

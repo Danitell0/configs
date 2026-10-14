@@ -25,7 +25,9 @@ link() {
 	if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
 		return
 	fi
-	if [ -f "$dest" ] && [ ! -L "$dest" ] && cmp -s "$src" "$dest"; then
+	if [ -L "$dest" ]; then
+		rm "$dest"                       # old link (e.g. repo moved): just replace
+	elif [ -f "$dest" ] && cmp -s "$src" "$dest"; then
 		rm "$dest"                       # same file already: no backup needed
 	elif [ -e "$dest" ] || [ -L "$dest" ]; then
 		mv "$dest" "$dest.bak-$STAMP"
